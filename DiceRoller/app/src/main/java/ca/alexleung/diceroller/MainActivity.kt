@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    lateinit var diceImage: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -18,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun rollDice() {
-        val diceImage = findViewById<ImageView>(R.id.dice_image)
+        diceImage = findViewById(R.id.dice_image)
         val drawableResource = when (Random().nextInt(6) + 1) {
             1 -> R.drawable.dice_1
             2 -> R.drawable.dice_2

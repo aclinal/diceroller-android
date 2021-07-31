@@ -3,6 +3,7 @@ package ca.alexleung.colourmyviews
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -14,12 +15,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setListeners() {
         val clickableViews = listOf(
-                R.id.box_one_text,
-                R.id.box_two_text,
-                R.id.box_three_text,
-                R.id.box_four_text,
-                R.id.box_five_text,
-                R.id.constraint_layout
+            R.id.box_one_text,
+            R.id.box_two_text,
+            R.id.box_three_text,
+            R.id.box_four_text,
+            R.id.box_five_text,
+            R.id.constraint_layout,
+            R.id.red_button,
+            R.id.yellow_button,
+            R.id.green_button,
         ).map { findViewById<View>(it) }
 
         clickableViews.forEach { textView ->
@@ -38,6 +42,10 @@ class MainActivity : AppCompatActivity() {
             R.id.box_three_text -> view.setBackgroundResource(android.R.color.holo_green_light)
             R.id.box_four_text -> view.setBackgroundResource(android.R.color.holo_green_dark)
             R.id.box_five_text -> view.setBackgroundResource(android.R.color.holo_green_light)
+
+            R.id.red_button -> findViewById<TextView>(R.id.box_three_text).setBackgroundResource(R.color.my_red)
+            R.id.yellow_button -> findViewById<TextView>(R.id.box_four_text).setBackgroundResource(R.color.my_yellow)
+            R.id.green_button -> findViewById<TextView>(R.id.box_five_text).setBackgroundResource(R.color.my_green)
 
             else -> view.setBackgroundColor(Color.LTGRAY)
         }

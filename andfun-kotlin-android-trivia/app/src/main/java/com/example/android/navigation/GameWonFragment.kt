@@ -21,7 +21,6 @@ import android.content.Intent.ACTION_SEND
 import android.content.Intent.EXTRA_TEXT
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -37,9 +36,6 @@ class GameWonFragment : Fragment() {
         binding.nextMatchButton.setOnClickListener {
             this.findNavController().navigate(GameWonFragmentDirections.actionGameWonFragmentToGameFragment())
         }
-
-        val args = arguments?.let { GameWonFragmentArgs.fromBundle(it) }
-        Toast.makeText(context, "numCorrect: ${args?.numCorrect}, numQuestions: ${args?.numQuestions}", Toast.LENGTH_LONG).show()
 
         setHasOptionsMenu(true)
         return binding.root

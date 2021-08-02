@@ -77,6 +77,12 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
         dessertTimer = DessertTimer(this.lifecycle)
 
+        savedInstanceState?.let {
+            revenue = it.getInt(KEY_REVENUE)
+            dessertsSold = it.getInt(DESSERTS_SOLD)
+            dessertTimer.secondsCount = it.getInt(DESSERT_TIMER_SECONDS)
+        }
+
         // Set the TextViews to the right values
         binding.revenue = revenue
         binding.amountSold = dessertsSold
@@ -115,6 +121,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     override fun onRestart() {
         super.onRestart()
         Timber.i("onRestart")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_REVENUE, revenue)
+        outState.putInt(DESSERTS_SOLD, dessertsSold)
+        outState.putInt(DESSERT_TIMER_SECONDS, dessertTimer.secondsCount)
+        Timber.i("onSaveInstanceState")
     }
 
     /**
@@ -182,5 +196,11 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
             R.id.shareMenuButton -> onShare()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private const val KEY_REVENUE = "key_revenue"
+        private const val DESSERTS_SOLD = "desserts_sold"
+        private const val DESSERT_TIMER_SECONDS = "dessert_timer_seconds"
     }
 }

@@ -74,6 +74,10 @@ class GameFragment : Fragment() {
             }
         })
 
+        viewModel.timerText.observe(viewLifecycleOwner, Observer { timerText ->
+            binding.timerText.text = timerText
+        })
+
         return binding.root
     }
 

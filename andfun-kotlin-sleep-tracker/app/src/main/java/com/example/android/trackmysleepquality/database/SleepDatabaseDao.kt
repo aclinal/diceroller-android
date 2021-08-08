@@ -16,4 +16,29 @@
 
 package com.example.android.trackmysleepquality.database
 
-interface SleepDatabaseDao
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+
+@Dao
+interface SleepDatabaseDao {
+    @Insert
+    fun insert(night: SleepNight)
+
+    @Update
+    fun update(night: SleepNight)
+
+    @Query("SELECT * FROM daily_sleep_qualities WHERE id = :key")
+    fun get(key: Long): SleepNight?
+
+    @Query("DELETE FROM daily_sleep_qualities")
+    fun clear()
+
+    @Query("SELECT * FROM daily_sleep_qualities ORDER BY id DESC")
+    fun getAllNights(): LiveData<List<SleepNight>>
+
+    @Query("SELECT * FROM daily_sleep_qualities ORDER BY id DESC LIMIT 1")
+    fun getTonight(): SleepNight?
+}

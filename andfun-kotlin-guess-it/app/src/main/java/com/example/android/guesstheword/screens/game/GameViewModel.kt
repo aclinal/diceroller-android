@@ -8,6 +8,13 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
+    enum class BuzzType(val pattern: LongArray) {
+        CORRECT(CORRECT_BUZZ_PATTERN),
+        GAME_OVER(GAME_OVER_BUZZ_PATTERN),
+        COUNTDOWN_PANIC(PANIC_BUZZ_PATTERN),
+        NO_BUZZ(NO_BUZZ_PATTERN)
+    }
+
     // The current word
     private val _word = MutableLiveData<String>()
     val word: LiveData<String>
@@ -25,10 +32,14 @@ class GameViewModel : ViewModel() {
     val eventGameFinish: LiveData<Boolean>
         get() = _eventGameFinish
 
+    private val _eventBuzz = MutableLiveData<BuzzType>()
+    val eventBuzz: LiveData<BuzzType>
+        get() = _eventBuzz
+
     private val _currentTimeMillis = MutableLiveData<Long>()
 
     val currentTimeString = Transformations.map(_currentTimeMillis) { currentTimeMillis ->
-        DateUtils.formatElapsedTime(currentTimeMillis / 1000)
+        DateUtils.formatElapsedTime(currentTimeMillis / ONE_SECOND)
     }
 
     private val timer: CountDownTimer
@@ -42,10 +53,14 @@ class GameViewModel : ViewModel() {
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
             override fun onTick(millisUntilFinished: Long) {
                 _currentTimeMillis.value = millisUntilFinished
+                if (millisUntilFinished <= PANIC_TIME) {
+                    _eventBuzz.value = BuzzType.COUNTDOWN_PANIC
+                }
             }
 
             override fun onFinish() {
                 _eventGameFinish.value = true
+                _eventBuzz.value = BuzzType.GAME_OVER
             }
         }
 
@@ -107,6 +122,7 @@ class GameViewModel : ViewModel() {
 
     fun onCorrect() {
         _score.value = _score.value?.plus(1)
+        _eventBuzz.value = BuzzType.CORRECT
         nextWord()
     }
 
@@ -114,14 +130,23 @@ class GameViewModel : ViewModel() {
         _eventGameFinish.value = false
     }
 
-    companion object {
-        // When the game is over
-        const val DONE = 0L
+    fun onBuzzComplete() {
+        _eventBuzz.value = BuzzType.NO_BUZZ
+    }
 
+    companion object {
         // Number of milliseconds in a second
         const val ONE_SECOND = 1000L
 
         // Total time of the game
+        const val PANIC_TIME = 3000L
+
+        // Total time of the game
         const val COUNTDOWN_TIME = 10000L
+
+        private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
+        private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
+        private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
+        private val NO_BUZZ_PATTERN = longArrayOf(0)
     }
 }

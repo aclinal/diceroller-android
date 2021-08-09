@@ -15,3 +15,56 @@
  */
 
 package com.example.android.trackmysleepquality.sleepquality
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.android.trackmysleepquality.database.SleepDatabaseDao
+import kotlinx.coroutines.*
+
+class SleepQualityViewModel(
+        private val sleepNightKey: Long,
+        private val dataSource: SleepDatabaseDao
+) : ViewModel() {
+
+    private val viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+    private val _navigateToSleepTrackerEvent = MutableLiveData<Boolean>()
+    val navigateToSleepQualityEvent: LiveData<Boolean>
+        get() = _navigateToSleepTrackerEvent
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
+
+    fun onSetSleepQuality(quality: Int) {
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                val night = dataSource.get(sleepNightKey) ?: return@withContext
+                night.qualityRating = quality
+                dataSource.update(night)
+            }
+            _navigateToSleepTrackerEvent.value = true
+        }
+    }
+
+    fun doneNavigating() {
+        _navigateToSleepTrackerEvent.value = null
+    }
+
+    class Factory(
+            private val sleepNightKey: Long,
+            private val dataSource: SleepDatabaseDao
+    ) : ViewModelProvider.Factory {
+        @Suppress("unchecked_cast")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(SleepQualityViewModel::class.java)) {
+                return SleepQualityViewModel(sleepNightKey, dataSource) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+}
